@@ -1,0 +1,41 @@
+package com.nqmtuan.android.randomrandomizer;
+
+import android.os.Bundle;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.nqmtuan.android.randomrandomizer.FragmentTab.FragmentTab1;
+import com.nqmtuan.android.randomrandomizer.FragmentTab.FragmentTab2;
+
+public class MainActivity extends SherlockFragmentActivity {
+	Tab tab;
+	
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//      setContentView(R.layout.activity_main);
+        ActionBar actionBar = getSupportActionBar();
+        
+        actionBar.setDisplayShowHomeEnabled(true);
+        
+        actionBar.setDisplayShowTitleEnabled(true);
+        
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
+        tab = actionBar.newTab().setTabListener(new FragmentTab1());
+        tab.setText("Tab 1");
+        actionBar.addTab(tab);
+        
+        tab = actionBar.newTab().setTabListener(new FragmentTab2());
+        tab.setText("Tab 2");
+        actionBar.addTab(tab);
+//
+//        tab = actionBar.newTab().setTabListener(new FragmentsTab3());
+//        tab.setText("Tab 3");
+//        actionBar.addTab(tab);        
+    }
+
+    
+    
+}

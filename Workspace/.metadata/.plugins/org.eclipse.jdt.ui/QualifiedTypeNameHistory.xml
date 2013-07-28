@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="com.actionbarsherlock.app.ActionBar.Tab"/>
+<fullyQualifiedTypeName name="com.actionbarsherlock.app.SherlockFragmentActivity"/>
+<fullyQualifiedTypeName name="com.actionbarsherlock.app.ActionBar"/>
+<fullyQualifiedTypeName name="com.actionbarsherlock.app.SherlockFragment"/>
+<fullyQualifiedTypeName name="android.support.v4.app.FragmentTransaction"/>
+<fullyQualifiedTypeName name="android.support.v4.app.Fragment"/>
+<fullyQualifiedTypeName name="android.R"/>
+<fullyQualifiedTypeName name="android.R.layout"/>
+<fullyQualifiedTypeName name="com.nqmtuan.android.randomrandomizer.R"/>
+<fullyQualifiedTypeName name="com.nqmtuan.android.randomrandomizer.R.layout"/>
+<fullyQualifiedTypeName name="com.nqmtuan.android.randomrandomizer.SquareLayout.SquareLayout"/>
+<fullyQualifiedTypeName name="android.util.AttributeSet"/>
+<fullyQualifiedTypeName name="android.view.View.MeasureSpec"/>
+<fullyQualifiedTypeName name="java.lang.Boolean"/>
+<fullyQualifiedTypeName name="com.nqmtuan.android.randomrandomizer.DomainObject.RandomElement"/>
+<fullyQualifiedTypeName name="com.nqmtuan.android.randomrandomizer.DomainObject.RandomElementCollection"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.util.Collections"/>
+</qualifiedTypeNameHistroy>

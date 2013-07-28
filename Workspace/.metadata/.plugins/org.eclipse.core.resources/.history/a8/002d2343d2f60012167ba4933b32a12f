@@ -1,0 +1,58 @@
+package com.nqmtuan.android.randomrandomizer.DomainObject;
+
+public class RandomElement {
+	private String name;
+	private String imageName;
+	private String drawableName;
+	private boolean shouldUseName;
+	private boolean shouldUseImageName;
+	private boolean shouldUseDrawableName;
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getImageName() {
+		return imageName;
+	}
+	
+	public void setImageName(String imageName) {
+		this.imageName = imageName;
+	}
+	
+	public String getDrawableName() {
+		return drawableName;
+	}
+	
+	public void setDrawableName(String drawableName) {
+		this.drawableName = drawableName;
+	}
+	
+	public boolean isShouldUseName() {
+		return shouldUseName;
+	}
+	
+	public void setShouldUseName(boolean shouldUseName) {
+		this.shouldUseName = shouldUseName;
+	}
+	
+	public boolean isShouldUseImageName() {
+		return shouldUseImageName;
+	}
+	
+	public void setShouldUseImageName(boolean shouldUseImageName) {
+		this.shouldUseImageName = shouldUseImageName;
+	}
+	
+	public boolean isShouldUseDrawableName() {
+		return shouldUseDrawableName;
+	}
+	
+	public void setShouldUseDrawableName(boolean shouldUseDrawableName) {
+		this.shouldUseDrawableName = shouldUseDrawableName;
+	}
+}

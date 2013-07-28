@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.nqmtuan.android.randomrandomizer.SquareLayout.SquareLayout
+        android:id="@+id/tile_square_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        >
+        
+        <!-- Inside the square layout, it is either an imageview -->
+        <ImageView 
+            android:id="@+id/tile_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"            
+            />
+        
+        
+        <!-- Or text view, we allow 3 text view representing 3 elements -->
+        <RelativeLayout 
+            android:id="@+id/tile_text_view_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            >
+			
+            <TextView 
+                android:id="@+id/tile_text_view_1"
+	            android:layout_width="wrap_content"
+    	        android:layout_height="wrap_content"
+    	        android:text="text1"
+    	        android:gravity="center"
+                />
+            
+            <TextView 
+                android:id="@+id/tile_text_view_2"
+	            android:layout_width="wrap_content"
+    	        android:layout_height="wrap_content"
+    	        android:text="text2"
+    	        android:layout_below="@+id/tile_text_view_1"
+    	        android:gravity="center"
+    	        android:layout_marginTop="10dp"
+    	        />
+            
+            <TextView 
+                android:id="@+id/tile_text_view_3"
+	            android:layout_width="wrap_content"
+    	        android:layout_height="wrap_content"
+    	        android:text="text3"
+    	        android:layout_below="@+id/tile_text_view_2"
+    	        android:gravity="center"
+    	        android:layout_marginTop="10dp"
+                />
+            
+        </RelativeLayout>
+        
+    </com.nqmtuan.android.randomrandomizer.SquareLayout.SquareLayout>
+	
+    <TextView 
+        android:id="@+id/tile_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tile_square_layout"
+        android:text="My name"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        />
+</RelativeLayout>

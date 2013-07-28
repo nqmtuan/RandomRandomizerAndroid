@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename method &apos;de.greenrobot.daogenerator.gentest.ExampleDaoGenerator.addCIOWorkshopSchema(...)&apos; to &apos;addRandomizerSchema&apos;&#x0D;&#x0A;- Original project: &apos;DaoExampleGenerator&apos;&#x0D;&#x0A;- Original element: &apos;de.greenrobot.daogenerator.gentest.ExampleDaoGenerator.addCIOWorkshopSchema(...)&apos;&#x0D;&#x0A;- Renamed element: &apos;de.greenrobot.daogenerator.gentest.ExampleDaoGenerator.addRandomizerSchema(...)&apos;&#x0D;&#x0A;- Update references to refactored element" delegate="false" deprecate="false" description="Rename method &apos;addCIOWorkshopSchema&apos;" flags="589826" id="org.eclipse.jdt.ui.rename.method" input="/src&lt;de.greenrobot.daogenerator.gentest{ExampleDaoGenerator.java[ExampleDaoGenerator~addCIOWorkshopSchema~QSchema;" name="addRandomizerSchema" references="true" stamp="1374937583671" version="1.0"/>
+</session>

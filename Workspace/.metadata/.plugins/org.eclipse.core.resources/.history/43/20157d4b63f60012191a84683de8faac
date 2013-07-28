@@ -1,0 +1,45 @@
+package com.nqmtuan.android.randomrandomizer.DomainObject;
+
+import java.util.ArrayList;
+
+public class RandomElementCollection {
+	private ArrayList<RandomElement> listRandomElement;
+	private int nSelection;
+	private boolean shouldAllowRepeat;
+	
+	public ArrayList<RandomElement> getListRandomElement() {
+		return listRandomElement;
+	}
+	
+	public void setListRandomElement(ArrayList<RandomElement> listRandomElement) {
+		this.listRandomElement = listRandomElement;
+	}
+	
+	public int getnSelection() {
+		return nSelection;
+	}
+	
+	public void setnSelection(int nSelection) {
+		this.nSelection = nSelection;
+	}
+	
+	public boolean isShouldAllowRepeat() {
+		return shouldAllowRepeat;
+	}
+	
+	public void setShouldAllowRepeat(boolean shouldAllowRepeat) {
+		this.shouldAllowRepeat = shouldAllowRepeat;
+	}
+	
+	public RandomElement getElementAtIndex (int index) {
+		if (listRandomElement.size() > index)
+			return listRandomElement.get(index);
+		return null;
+	}
+	
+	public void addElement (RandomElement randomElement) {
+		listRandomElement.add(randomElement);
+	}
+	
+	
+}

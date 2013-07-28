@@ -1,0 +1,7 @@
+package com.nqmtuan.android.randomrandomizer;
+
+import android.widget.RelativeLayout;
+
+public class RandomCollectionTile extends RelativeLayout {
+
+}

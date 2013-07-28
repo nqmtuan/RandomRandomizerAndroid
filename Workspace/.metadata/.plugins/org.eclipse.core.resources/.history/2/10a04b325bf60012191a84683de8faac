@@ -1,0 +1,7 @@
+package com.nqmtuan.android.randomrandomizer.SquareLayout;
+
+import android.widget.LinearLayout;
+
+public class SquareLayout extends LinearLayout {
+
+}

@@ -1,0 +1,702 @@
+/*
+ * Copyright (C) 2011 Markus Junginger, greenrobot (http://greenrobot.de)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.greenrobot.daogenerator.gentest;
+
+import de.greenrobot.daogenerator.DaoGenerator;
+import de.greenrobot.daogenerator.Entity;
+import de.greenrobot.daogenerator.Property;
+import de.greenrobot.daogenerator.Schema;
+import de.greenrobot.daogenerator.ToMany;
+
+/**
+ * Generates entities and DAOs for the example project DaoExample.
+ * 
+ * Run it as a Java application (not Android).
+ * 
+ * @author Markus
+ */
+public class ExampleDaoGenerator {
+
+    public static void main(String[] args) throws Exception {
+        Schema schema = new Schema(3, "com.zimerick.cioworkshop");
+        schema.enableKeepSectionsByDefault();
+        addCIOWorkshopSchema(schema);
+        new DaoGenerator().generateAll(schema, "/Users/minhtuan/dev/Accenture Checkout/CIOWorkshop/src-gen");
+    }
+    
+    private static void addCIOWorkshopSchema (Schema schema)
+    {
+    	//Section
+    	Entity section = schema.addEntity("Section");
+    	section.implementsSerializable();
+    	addSectionAttributes(section);
+    	
+    	Property parentSectionID = section.addLongProperty("parentSectionID").getProperty();
+    	section.addToOne(section, parentSectionID).setName("parentSection");
+    	section.addToMany(section, parentSectionID).setName("childSections");
+    	
+    	
+    	//Topic
+    	Entity topic = schema.addEntity("Topic");
+    	topic.implementsSerializable();
+    	topic.setSuperclass("ContentObject");
+    	addTopicAttributes (topic);
+    	
+    	
+    	
+    	//Person
+    	Entity person = schema.addEntity("Person");
+    	person.implementsSerializable();
+    	person.setSuperclass("ContentObject");
+    	addPersonAttributes (person);
+    	
+    	
+    	
+    	//Page
+    	Entity page = schema.addEntity("Page");
+    	page.implementsSerializable();
+    	page.setSuperclass("ContentObject");
+    	addPageAttributes (page);
+    	    	
+    	
+    	
+    	//Comment
+    	Entity comment = schema.addEntity("Comment");
+    	comment.implementsSerializable();
+    	comment.setSuperclass("ContentObject");
+    	addCommentAttributes (comment);
+    	
+    	
+    	
+    	//Announcement
+    	Entity announcement = schema.addEntity("Announcement");
+    	announcement.implementsSerializable();
+    	announcement.setSuperclass("ContentObject");
+    	addAnnouncementAttributes (announcement);
+    	
+    	
+    	//Link topic with page
+    	Property topicPageID = topic.addLongProperty("pageID").getProperty();
+    	topic.addToOne(page, topicPageID);
+    	
+    	//Link topic with comment
+    	Property commentTopicID = comment.addLongProperty("topicID").getProperty();
+    	comment.addToOne(topic, commentTopicID);
+    	topic.addToMany(comment, commentTopicID).setName("comments");
+    	
+    	
+    	//Link person with comment
+    	Property commentPersonID = comment.addLongProperty("personID").getProperty();
+    	comment.addToOne(person, commentPersonID);
+    	person.addToMany(comment, commentPersonID).setName("comments");
+    	
+    	
+    	//Link comment with previous comment ID
+    	Property previousCommentID = comment.addLongProperty("previousCommentID").getProperty();
+    	comment.addToOne(comment, previousCommentID).setName("previousComment");
+    	
+    	
+    	//Section__Topic
+    	Entity section__topic = schema.addEntity("Section__Topic");
+    	addSection__TopicAttributes (section__topic);
+    	
+    	
+    	
+    	//Section__Person
+    	Entity section__person = schema.addEntity("Section__Person");
+    	addSection__PersonAttributes (section__person);
+    	
+    	
+    	//Section__Page
+    	Entity section__page = schema.addEntity("Section__Page");
+    	addSection__PageAttributes (section__page);
+    	
+    	
+    	//Topic__Person
+    	Entity agenda = schema.addEntity("Topic__Person");
+    	addAgendaAttributes (agenda);
+    	
+    	
+    	//Device
+    	Entity device = schema.addEntity("Device");
+    	device.implementsSerializable();
+    	addDeviceAttributes (device);
+    	
+    	Property devicePersonID = device.addLongProperty("personID").getProperty();
+    	device.addToOne(person, devicePersonID);    	    	
+    	
+    	
+    	//MobileUser
+    	Entity mobileUser = schema.addEntity("MobileUser");
+    	mobileUser.implementsSerializable();
+    	addMobileUserAttributes (mobileUser);
+    	
+    	Property mobileUserPersonID = mobileUser.addLongProperty("personID").getProperty();
+    	mobileUser.addToOne(person, mobileUserPersonID);
+    }
+    
+    private static void addSectionAttributes (Entity section) {
+    	section.addLongProperty("idx").primaryKey();
+    	section.addIntProperty("sortID").notNull();
+    	section.addStringProperty("name");
+    	section.addStringProperty("image");
+    	section.addStringProperty("subText");
+    	section.addIntProperty("isHeroBanner").notNull();
+    	section.addIntProperty("isHidden").notNull();
+    	section.addIntProperty("accessLevel").notNull();
+    	section.addIntProperty("allowNotes").notNull();
+    	section.addIntProperty("allowShare").notNull();
+    	section.addStringProperty("metaData");
+    	section.addIntProperty("typeID");
+    	
+    	//Topics
+    	section.addStringProperty("predicate");
+    	
+    	//Twitter
+    	section.addStringProperty("hashTag");
+    	section.addStringProperty("shareText");
+    	section.addStringProperty("shareImage");
+    	
+    	section.addIntProperty("isdeleted").notNull();
+    }
+    
+    
+    
+    private static void addTopicAttributes (Entity topic) {    	
+    	topic.addLongProperty("topicID").primaryKey();
+    	topic.addStringProperty("startTime");
+    	topic.addStringProperty("endTime");
+    	
+    	addContentObjectAttributes (topic);
+    	
+    	
+    }
+    
+    
+    private static void addPersonAttributes (Entity person) {    	
+    	person.addLongProperty("personID").primaryKey();
+    	person.addStringProperty("jobTitle");
+    	person.addStringProperty("company");
+    	person.addStringProperty("email");
+    	person.addStringProperty("faxNumber");
+    	person.addStringProperty("mobileNumber");
+    	person.addStringProperty("homeNumber");
+    	person.addStringProperty("image");
+    	person.addStringProperty("thumbnail");
+    	person.addStringProperty("bio");
+    	person.addStringProperty("shareableFields");
+    	person.addIntProperty("allowContactExchange").notNull();
+    	person.addIntProperty("friendState").notNull();
+    	
+    	addContentObjectAttributes (person);
+    }
+    
+    
+    private static void addPageAttributes (Entity page) {    	
+    	page.addLongProperty("pageID").primaryKey();
+    	page.addStringProperty("url");
+    	page.addStringProperty("html");
+    	addContentObjectAttributes (page);
+    }
+    
+    
+    private static void addCommentAttributes (Entity comment) {
+    	comment.addLongProperty("commentID").primaryKey();
+    	comment.addStringProperty("timeStamp");
+    	comment.addStringProperty("htmlContent");
+    	addContentObjectAttributes (comment);
+    }
+    
+    
+    private static void addAnnouncementAttributes (Entity announcement) {
+    	announcement.addLongProperty("announcementID").primaryKey();
+    	announcement.addStringProperty("timeStamp");
+    	announcement.addStringProperty("image");
+    	announcement.addStringProperty("content");
+    	addContentObjectAttributes (announcement);
+    }
+    
+    
+    private static void addContentObjectAttributes (Entity contentObject) {
+    	contentObject.addStringProperty("title");
+    	contentObject.addIntProperty("sortID").notNull();
+    	contentObject.addStringProperty("metaData");
+    	contentObject.addIntProperty("shouldAddBadge").notNull();
+    	contentObject.addIntProperty("isdeleted").notNull();
+    	contentObject.addIntProperty("allowNotes").notNull();
+    	contentObject.addIntProperty("allowShare").notNull();
+    	contentObject.addIntProperty("isHidden").notNull();
+    }
+    
+    
+    private static void addDeviceAttributes (Entity device) {
+    	device.addLongProperty("ID").primaryKey().autoincrement();
+    	device.addStringProperty("deviceID").unique();
+    	device.addStringProperty("pushToken");
+    	device.addIntProperty("isLoggedIn").notNull();
+    	device.addIntProperty("isdeleted").notNull();
+    }
+    
+    
+    private static void addMobileUserAttributes (Entity mobileUser) {
+    	mobileUser.addLongProperty("ID").primaryKey().autoincrement();
+    	mobileUser.addStringProperty("twitterAccount");
+    	mobileUser.addStringProperty("twitterPassword");
+    	mobileUser.addStringProperty("linkedInAccount");
+    	mobileUser.addStringProperty("linkedInPassword");
+    	mobileUser.addStringProperty("everNoteAccount");
+    	mobileUser.addStringProperty("everNotePassword");
+    	mobileUser.addIntProperty("isLoggedIn");
+    }
+    
+    
+    
+    
+
+    private static void addSection__TopicAttributes (Entity section__topic) {
+    	section__topic.addLongProperty("id").primaryKey().autoincrement();
+    	section__topic.addLongProperty("idx");
+    	section__topic.addLongProperty("topicID");
+    	section__topic.addIntProperty("isdeleted").notNull();
+    	section__topic.addIntProperty("sortID").notNull();
+    }
+    
+    
+    private static void addSection__PersonAttributes (Entity section__person) {
+    	section__person.addLongProperty("id").primaryKey().autoincrement();
+    	section__person.addLongProperty("idx");
+    	section__person.addLongProperty("personID");
+    	section__person.addIntProperty("isdeleted").notNull();
+    	section__person.addIntProperty("sortID").notNull();
+    }
+    
+    
+    private static void addSection__PageAttributes (Entity section__page) {
+    	section__page.addLongProperty("id").primaryKey().autoincrement();
+    	section__page.addLongProperty("idx");
+    	section__page.addLongProperty("pageID");
+    	section__page.addIntProperty("isdeleted").notNull();    	
+    	section__page.addIntProperty("sortID").notNull();
+    }
+    
+    private static void addAgendaAttributes (Entity agenda) {
+    	agenda.addLongProperty("agendaID").primaryKey();
+    	agenda.addLongProperty("topicID");
+    	agenda.addLongProperty("personID");
+    	agenda.addIntProperty("isdeleted").notNull();    	
+    	agenda.addIntProperty("idx").notNull();
+    	agenda.addIntProperty("sortID").notNull();
+    }
+    
+    
+    
+    
+    
+//    private static void addCaltexSchema (Schema schema)
+//    {
+//    	//Status
+//    	Entity status = schema.addEntity("Status");
+//    	status.implementsSerializable();
+//    	addStatusAttributes(status);
+//    	
+//    	
+//    	//Device
+//    	Entity device = schema.addEntity("Device");
+//    	device.implementsSerializable();
+//    	addDeviceAttributes(device);    	    	    	
+//    	
+//    	//Link Device with status
+//    	Property deviceStatusID = device.addLongProperty ("statusID").getProperty();
+//    	device.addToOne(status, deviceStatusID);    	    	
+//    	
+//    	
+//    	//Country
+//    	Entity country = schema.addEntity("ZMRKAdminCountry");
+//    	country.implementsSerializable();
+//    	addCountryAttributes(country);
+//    	
+//    	
+//    	//City
+//    	Entity city = schema.addEntity("City");
+//    	city.implementsSerializable();
+//    	addCityAttributes(city);
+//    	
+//    	//Link city with country
+//    	Property cityCountryID = city.addLongProperty("countryID").getProperty();
+//    	city.addToOne(country, cityCountryID);
+//    	
+//    	
+//    	//Station
+//    	Entity station = schema.addEntity("Station");
+//    	station.implementsSerializable();
+//    	addStationAttributes(station);
+//    	
+//    	//Link station with country
+//    	Property stationCountryID = station.addLongProperty("countryID").getProperty();
+//    	station.addToOne(country,stationCountryID);
+//    	
+//    	
+//    	//Amenity
+//    	Entity amenity = schema.addEntity("Amenity");
+//    	amenity.implementsSerializable();
+//    	addAmenityAttributes(amenity);
+//    	
+//    	//Link amenity with countryID
+//    	Property amentityCountryID = amenity.addLongProperty("countryID").getProperty();
+//    	amenity.addToOne(country, amentityCountryID);
+//    	
+//    	
+//    	//Fuel
+//    	Entity fuel = schema.addEntity("Fuel");
+//    	fuel.implementsSerializable();
+//    	addFuelAttributes(fuel);
+//    	
+//    	//Link fueld with countryID
+//    	Property fuelCountryID = fuel.addLongProperty("countryID").getProperty();
+//    	fuel.addToOne(country, fuelCountryID);
+//    
+//    	
+//    	//Promotion
+//    	Entity promotion = schema.addEntity("Promotion");
+//    	promotion.implementsSerializable();
+//    	addPromotionAttributes(promotion);
+//    	
+//    	//Link promotion with countryID
+//    	Property promotionCountryID = promotion.addLongProperty("countryID").getProperty();
+//    	promotion.addToOne(country, promotionCountryID);
+//    	
+//    	
+//    	//Rating
+////    	Entity rating = schema.addEntity("Rating");
+////    	rating.implementsSerializable();
+////    	addRatingAttributes(rating);    	
+////    	
+////    	//Link rating with stationID
+////    	Property ratingStationID = rating.addLongProperty("stationID").getProperty();
+////    	rating.addToOne(station, ratingStationID);
+////    	Property stationRatingID = station.addLongProperty("ratingID").getProperty();
+////    	station.addToOne(rating, stationRatingID);
+//    	
+//    	
+//    	//Feedback
+//    	Entity feedback = schema.addEntity("Feedback");
+//    	feedback.implementsSerializable();
+//    	addFeedbackAttributes(feedback);    	
+//    	
+//    	//Link feedback with stationID
+//    	Property feedbackStationID = feedback.addLongProperty("stationID").getProperty();
+//    	feedback.addToOne(station, feedbackStationID);
+//    	Property stationFeedbackID = station.addLongProperty("feedbackID").getProperty();
+//    	station.addToOne(feedback, stationFeedbackID);
+//    	
+//    	
+//    	    	    	
+//    	//Broadcast
+//    	Entity broadcast = schema.addEntity("Broadcast");
+//    	broadcast.implementsSerializable();
+//    	addBroadcastAttributes(broadcast);    	
+//    	
+//    	
+//    	//Analytics
+//    	Entity analytic = schema.addEntity("Analytic");
+//    	analytic.implementsSerializable();
+//    	addAnalyticAttributes(analytic);    	
+//    	
+//    	
+//    	//Link broadcast with countryID
+//    	Property broadcastCountryID = broadcast.addLongProperty("countryID").getProperty();
+//    	broadcast.addToOne(country, broadcastCountryID);
+//    	
+//    	    	
+//    	//Station__Promotion
+//    	Entity station__promotion = schema.addEntity("Station__Promotion");
+//    	addStation__PromotionAttributes(station__promotion);
+//    	
+//    	
+//    	//Station+Amenity
+//    	Entity station__amenity = schema.addEntity("Station__Amenity");
+//    	addStation__AmenityAttributes(station__amenity);
+//    	
+//    	    	
+//    	//Station+Fuel
+//    	Entity station__fuel = schema.addEntity("Station__Fuel");
+//    	addStation__FuelAttributes(station__fuel);    	
+//    }
+//    
+//    
+//    
+//    private static void addDeviceAttributes (Entity device)
+//    {
+//    	device.addLongProperty("ID").primaryKey().autoincrement();
+//    	device.addStringProperty("deviceID").unique();
+//    	device.addFloatProperty("latitude").notNull();
+//    	device.addFloatProperty("longitude").notNull();
+//    	device.addFloatProperty("direction").notNull();
+//    	device.addStringProperty("deviceName").notNull();
+//    	//device.addIntProperty("carType").notNull();
+//    	device.addIntProperty("likeGained").notNull();
+//    	device.addStringProperty("pushToken").notNull();
+//    	device.addStringProperty ("macAddress").notNull();
+//    	device.addStringProperty("deviceOS").notNull();
+//    	device.addIntProperty("allowLocationShare").notNull();
+//    	device.addLongProperty("userPoints").notNull();
+//    	device.addLongProperty("stationsVisited").notNull();
+//    	device.addLongProperty("promosViewed").notNull();
+//    	device.addLongProperty("stationsRouted").notNull();
+//    	device.addStringProperty("deviceCountryCode");
+//    }
+//    
+//    
+//    private static void addStatusAttributes (Entity status)
+//    {
+//    	status.addLongProperty("statusID").primaryKey().autoincrement();
+//    	status.addStringProperty("deviceID").notNull();
+//    	status.addStringProperty("name");
+//    	status.addStringProperty("statusText");
+//    	status.addIntProperty("carType").notNull();
+//    	status.addIntProperty("carLevel").notNull();
+//    	status.addFloatProperty("direction").notNull();
+//    	status.addFloatProperty("latitude").notNull();
+//    	status.addFloatProperty("longitude").notNull();
+//    	status.addIntProperty("isdeleted").notNull();
+//    	status.addLongProperty("timeStamp").notNull();
+//    }
+//    
+//    private static void addCountryAttributes (Entity country)
+//    {
+//    	country.addLongProperty("countryID").primaryKey();
+//    	country.addStringProperty("countryCode");
+//    	country.addStringProperty("countryName");
+//    	country.addStringProperty("countryNetworkCode");
+//    	country.addIntProperty("isdeleted").notNull();    	
+//    }
+//    
+//    
+//    private static void addCityAttributes (Entity city)
+//    {
+//    	city.addLongProperty("cityID").primaryKey();
+//    	city.addStringProperty("cityName");
+//    	city.addStringProperty("cityNetworkCode");
+//    	city.addStringProperty("gmt");    	
+//    	city.addIntProperty("isdeleted").notNull();    	
+//    }
+//    
+//    
+//    private static void addStationAttributes (Entity station)
+//    {
+//    	station.addLongProperty("stationID").primaryKey();
+//    	station.addStringProperty("stationName");
+//    	station.addStringProperty("stationDescription");
+//    	station.addIntProperty("status").notNull();
+//    	station.addIntProperty("isdeleted").notNull();
+//    	station.addStringProperty("notes");
+//    	station.addStringProperty("phoneNumber");
+//    	station.addStringProperty("givenName");
+//    	station.addStringProperty("familyName");
+//    	station.addStringProperty("email");
+//    	station.addFloatProperty("latitude").notNull();
+//    	station.addFloatProperty("longitude").notNull();
+//    	station.addFloatProperty("geofence");   
+//    	station.addFloatProperty("distanceFromUser").notNull();
+//    	station.addIntProperty("isFavourite").notNull();
+//    	station.addStringProperty("street");
+//    	station.addStringProperty("city");
+//    	station.addStringProperty("state");
+//    	station.addStringProperty("postalCode");
+//    	station.addStringProperty("openingHours");
+//    	station.addIntProperty("isSpecialStation").notNull();
+//    	station.addStringProperty("stationImage");
+//    	station.addStringProperty("website");
+//    	station.addStringProperty("metaKeywords");
+//    }
+//    
+//    
+//    private static void addAmenityAttributes (Entity amenity)
+//    {
+//    	amenity.addLongProperty("amenityID").primaryKey();
+//    	amenity.addStringProperty("amenityName");
+//    	amenity.addIntProperty("isdeleted").notNull();
+//    	amenity.addIntProperty("sortID").notNull();
+//    	amenity.addIntProperty("lubeOilChange").notNull();
+//    }
+//    
+//
+//    private static void addFuelAttributes (Entity fuel)
+//    {
+//    	fuel.addLongProperty("fuelID").primaryKey();
+//    	fuel.addStringProperty("fuelName");
+//    	fuel.addStringProperty("fuelImage");
+//    	fuel.addStringProperty("fuelImageOld");
+//    	fuel.addIntProperty("isdeleted").notNull();
+//    	fuel.addIntProperty("sortID").notNull();
+//    }
+//    
+//
+//    private static void addPromotionAttributes (Entity promotion)
+//    {
+//    	promotion.addLongProperty("promotionID").primaryKey();
+//    	promotion.addStringProperty("promotionName");
+//    	promotion.addIntProperty("isdeleted").notNull();
+//    	promotion.addIntProperty("hasViewed").notNull();
+//    	promotion.addIntProperty("hasPopUp").notNull();
+//    	promotion.addStringProperty("promotionThumbnail");
+//    	promotion.addStringProperty("promotionThumbnailOld");
+//    	promotion.addStringProperty("promotionImage");
+//    	promotion.addStringProperty("promotionImageOld");
+//    	promotion.addStringProperty("timeZone");
+//    	promotion.addStringProperty("startDateTime");
+//    	promotion.addStringProperty("endDateTime");
+//    	promotion.addIntProperty("status").notNull();  
+//    	promotion.addStringProperty("passFileURL");
+//    	promotion.addIntProperty("lubeOilPromo").notNull();
+//    	promotion.addStringProperty("promotionBody");
+//    	promotion.addStringProperty("promotionTAndC");
+//    }
+//    
+//    private static void addRatingAttributes (Entity rating)
+//    {
+//    	rating.addLongProperty("ratingID").primaryKey();
+//    	rating.addStringProperty("deviceID");
+//    	rating.addStringProperty("timeStamp");
+//    	rating.addIntProperty("rating");    	    	
+//    }
+//    
+//
+//    private static void addFeedbackAttributes (Entity feedback)
+//    {
+//    	feedback.addLongProperty("feedbackID").primaryKey();
+//    	feedback.addStringProperty("deviceID");
+//    	feedback.addStringProperty("timeStamp");
+//    	feedback.addIntProperty("rating").notNull();
+//    	feedback.addStringProperty("feedbackText");    	
+//    }
+//    
+//
+//    private static void addBroadcastAttributes (Entity broadcast)
+//    {
+//    	broadcast.addLongProperty("broadcastID").primaryKey();
+//    	broadcast.addStringProperty("message");
+//    	broadcast.addIntProperty("isdeleted").notNull();
+//    	broadcast.addIntProperty("hasViewed").notNull();
+//    	broadcast.addIntProperty("hasPopUp").notNull();
+//    	broadcast.addStringProperty("timezone");
+//    	broadcast.addStringProperty("startDateTime");
+//    	broadcast.addIntProperty("status").notNull();    	
+//    }
+//    
+//    
+//    private static void addAnalyticAttributes (Entity analytic)
+//    {
+//    	analytic.addLongProperty("analyticsID").primaryKey();
+//    	analytic.addStringProperty("deviceID");
+//    	analytic.addStringProperty("analyticsType");
+//    	analytic.addStringProperty("value");
+//    	analytic.addStringProperty("timeStamp");
+//    	analytic.addStringProperty("deviceCountryCode");
+//    	analytic.addStringProperty("deviceOS");
+//    }
+//    
+//    
+//
+//    private static void addStation__PromotionAttributes (Entity station__promotion)
+//    {
+//    	station__promotion.addLongProperty("id").primaryKey().autoincrement();
+//    	station__promotion.addLongProperty("stationID");
+//    	station__promotion.addLongProperty("promotionID");
+//    	station__promotion.addIntProperty("isdeleted");    	
+//    }
+//    
+//
+//    private static void addStation__AmenityAttributes (Entity station__amenity)
+//    {
+//    	station__amenity.addLongProperty("id").primaryKey().autoincrement();
+//    	station__amenity.addLongProperty("stationID");
+//    	station__amenity.addLongProperty("amenityID");
+//    	station__amenity.addIntProperty("isdeleted");    	
+//    }
+//    
+//
+//    private static void addStation__FuelAttributes (Entity station__fuel)
+//    {
+//    	station__fuel.addLongProperty("id").primaryKey().autoincrement();
+//    	station__fuel.addLongProperty("stationID");
+//    	station__fuel.addLongProperty("fuelID");
+//    	station__fuel.addIntProperty("isdeleted");    	
+//    }
+//    
+//    
+//    
+//    private static void addDataSyncTestSchema (Schema schema)
+//    {
+//    	Entity person = schema.addEntity ("Persons");
+//    	person.addLongProperty("personID").primaryKey().autoincrement();
+//    	person.addStringProperty("personName");
+//    	person.addIntProperty("countryID");
+//    	person.addIntProperty("cityID");
+//    	person.addStringProperty("address");
+//    	person.addStringProperty("phoneNumber");
+//    	person.addStringProperty("password");
+//    	person.addStringProperty("personImage");
+//    }
+//
+//    
+//    private static void addCoreDataQueueObject (Schema schema)
+//    {
+//    	Entity coreDataQueue = schema.addEntity("ZMRKCoreDataQueueObject");
+//    	coreDataQueue.addLongProperty("objectID").primaryKey().autoincrement();
+//    	coreDataQueue.addIntProperty("appIndex");
+//    	coreDataQueue.addStringProperty("data");
+//    	coreDataQueue.addIntProperty("modifiedIndex");
+//    }
+//    
+//    private static void addUser (Schema schema)
+//    {
+//    	Entity user = schema.addEntity ("User");
+//    	user.addLongProperty("userID").primaryKey().autoincrement();
+//    	user.addStringProperty("userName").notNull();
+//    	user.addStringProperty("password");
+//    	user.addStringProperty("userEmail");
+//    	user.addStringProperty("givenName");
+//    	user.addStringProperty("familyName");
+//    	user.addIntProperty("roleID");
+//    	user.addIntProperty("accountStatus");
+//    }
+//    
+//    private static void addNote(Schema schema) {
+//        Entity note = schema.addEntity("Note");
+//        note.addIdProperty();
+//        note.addStringProperty("text").notNull();
+//        note.addStringProperty("comment");
+//        note.addDateProperty("date");
+//    }
+//
+//    private static void addCustomerOrder(Schema schema) {
+//        Entity customer = schema.addEntity("Customer");
+//        customer.addIdProperty();
+//        customer.addStringProperty("name").notNull();
+//
+//        Entity order = schema.addEntity("Order");
+//        order.setTableName("ORDERS"); // "ORDER" is a reserved keyword
+//        order.addIdProperty();
+//        Property orderDate = order.addDateProperty("date").getProperty();
+//        Property customerId = order.addLongProperty("customerId").notNull().getProperty();
+//        order.addToOne(customer, customerId);
+//
+//        ToMany customerToOrders = customer.addToMany(order, customerId);
+//        customerToOrders.setName("orders");
+//        customerToOrders.orderAsc(orderDate);
+//    }    
+}

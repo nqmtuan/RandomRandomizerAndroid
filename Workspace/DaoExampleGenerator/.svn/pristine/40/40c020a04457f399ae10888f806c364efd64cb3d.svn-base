@@ -1,0 +1,308 @@
+/*
+ * Copyright (C) 2011 Markus Junginger, greenrobot (http://greenrobot.de)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.greenrobot.daogenerator.gentest;
+
+import de.greenrobot.daogenerator.DaoGenerator;
+import de.greenrobot.daogenerator.Entity;
+import de.greenrobot.daogenerator.Property;
+import de.greenrobot.daogenerator.Schema;
+import de.greenrobot.daogenerator.ToMany;
+
+/**
+ * Generates entities and DAOs for the example project DaoExample.
+ * 
+ * Run it as a Java application (not Android).
+ * 
+ * @author Markus
+ */
+public class ExampleDaoGenerator {
+
+    public static void main(String[] args) throws Exception {
+        Schema schema = new Schema(3, "com.zimerick.cioworkshop");
+        schema.enableKeepSectionsByDefault();
+        addCIOWorkshopSchema(schema);
+        new DaoGenerator().generateAll(schema, "/Users/minhtuan/dev/Accenture Checkout/CIOWorkshop/src-gen");
+    }
+    
+    private static void addCIOWorkshopSchema (Schema schema)
+    {
+    	//Section
+    	Entity section = schema.addEntity("Section");
+    	section.setSuperclass("GenericModelObject");
+    	section.implementsSerializable();
+    	addSectionAttributes(section);
+    	
+    	Property parentSectionID = section.addLongProperty("parentSectionID").getProperty();
+    	section.addToOne(section, parentSectionID).setName("parentSection");
+    	section.addToMany(section, parentSectionID).setName("childSections");
+    	
+    	
+    	//Topic
+    	Entity topic = schema.addEntity("Topic");
+    	topic.implementsSerializable();
+    	topic.setSuperclass("ContentObject");
+    	addTopicAttributes (topic);
+    	
+    	
+    	
+    	//Person
+    	Entity person = schema.addEntity("Person");
+    	person.implementsSerializable();
+    	person.setSuperclass("ContentObject");
+    	addPersonAttributes (person);
+    	
+    	
+    	
+    	//Page
+    	Entity page = schema.addEntity("Page");
+    	page.implementsSerializable();
+    	page.setSuperclass("ContentObject");
+    	addPageAttributes (page);
+    	    	
+    	
+    	
+    	//Comment
+    	Entity comment = schema.addEntity("Comment");
+    	comment.implementsSerializable();
+    	comment.setSuperclass("ContentObject");
+    	addCommentAttributes (comment);
+    	
+    	
+    	
+    	//Announcement
+    	Entity announcement = schema.addEntity("Announcement");
+    	announcement.implementsSerializable();
+    	announcement.setSuperclass("ContentObject");
+    	addAnnouncementAttributes (announcement);
+    	
+    	
+    	//Link topic with page
+    	Property topicPageID = topic.addLongProperty("pageID").getProperty();
+    	topic.addToOne(page, topicPageID);
+    	
+    	//Link topic with comment
+    	Property commentTopicID = comment.addLongProperty("topicID").getProperty();
+    	comment.addToOne(topic, commentTopicID);
+    	topic.addToMany(comment, commentTopicID).setName("comments");
+    	
+    	
+    	//Link person with comment
+    	Property commentPersonID = comment.addLongProperty("personID").getProperty();
+    	comment.addToOne(person, commentPersonID);
+    	person.addToMany(comment, commentPersonID).setName("comments");
+    	
+    	
+    	//Link comment with previous comment ID
+    	Property previousCommentID = comment.addLongProperty("previousCommentID").getProperty();
+    	comment.addToOne(comment, previousCommentID).setName("previousComment");
+    	
+    	
+    	//Section__Topic
+    	Entity section__topic = schema.addEntity("Section__Topic");
+    	addSection__TopicAttributes (section__topic);    	
+    	
+    	
+    	//Section__Person
+    	Entity section__person = schema.addEntity("Section__Person");
+    	addSection__PersonAttributes (section__person);
+    	
+    	
+    	//Section__Page
+    	Entity section__page = schema.addEntity("Section__Page");
+    	addSection__PageAttributes (section__page);
+    	
+    	
+    	//Topic__Person
+    	Entity agenda = schema.addEntity("Agenda");
+    	addAgendaAttributes (agenda);
+    	
+    	Property agendaTopicID = agenda.addLongProperty("topicID").notNull().getProperty();
+    	agenda.addToOne(topic, agendaTopicID);
+    	Property agendaPersonID = agenda.addLongProperty("personID").notNull().getProperty();
+    	agenda.addToOne(person, agendaPersonID);
+    	Property agendaRoleID = agenda.addLongProperty("idx").notNull().getProperty();
+    	agenda.addToOne(section, agendaRoleID);    	
+    	
+    	
+    	//Device
+    	Entity device = schema.addEntity("Device");
+    	device.implementsSerializable();
+    	addDeviceAttributes (device);
+    	
+    	Property devicePersonID = device.addLongProperty("personID").getProperty();
+    	device.addToOne(person, devicePersonID);    	    	
+    	
+    	
+    	//MobileUser
+    	Entity mobileUser = schema.addEntity("MobileUser");
+    	mobileUser.implementsSerializable();
+    	addMobileUserAttributes (mobileUser);
+    	
+    	Property mobileUserPersonID = mobileUser.addLongProperty("personID").getProperty();
+    	mobileUser.addToOne(person, mobileUserPersonID);
+    }
+    
+    private static void addSectionAttributes (Entity section) {
+    	section.addLongProperty("idx").primaryKey();
+    	section.addIntProperty("sortID").notNull();
+    	section.addStringProperty("name");
+    	section.addStringProperty("image");
+    	section.addStringProperty("subText");
+    	section.addIntProperty("isHeroBanner").notNull();
+    	section.addIntProperty("isHidden").notNull();
+    	section.addIntProperty("accessLevel").notNull();
+    	section.addIntProperty("allowNotes").notNull();
+    	section.addIntProperty("allowShare").notNull();
+    	section.addStringProperty("metaData");
+    	section.addIntProperty("typeID");
+    	
+    	//Topics
+    	section.addStringProperty("predicate");
+    	
+    	//Twitter
+    	section.addStringProperty("hashTag");
+    	section.addStringProperty("shareText");
+    	section.addStringProperty("shareImage");
+    	
+    	section.addIntProperty("isdeleted").notNull();
+    	section.addStringProperty("displayName");
+    }
+    
+    
+    
+    private static void addTopicAttributes (Entity topic) {    	
+    	topic.addLongProperty("topicID").primaryKey();
+    	topic.addStringProperty("startTime");
+    	topic.addStringProperty("endTime");
+    	
+    	addContentObjectAttributes (topic);
+    	
+    	
+    }
+    
+    
+    private static void addPersonAttributes (Entity person) {    	
+    	person.addLongProperty("personID").primaryKey();
+    	person.addStringProperty("jobTitle");
+    	person.addStringProperty("company");
+    	person.addStringProperty("email");
+    	person.addStringProperty("faxNumber");
+    	person.addStringProperty("mobileNumber");
+    	person.addStringProperty("homeNumber");
+    	person.addStringProperty("image");
+    	person.addStringProperty("thumbnail");
+    	person.addStringProperty("bio");
+    	person.addStringProperty("shareableFields");
+    	person.addIntProperty("allowContactExchange").notNull();
+    	person.addIntProperty("friendState").notNull();
+    	
+    	addContentObjectAttributes (person);
+    }
+    
+    
+    private static void addPageAttributes (Entity page) {    	
+    	page.addLongProperty("pageID").primaryKey();
+    	page.addStringProperty("url");
+    	page.addStringProperty("html");
+    	addContentObjectAttributes (page);
+    }
+    
+    
+    private static void addCommentAttributes (Entity comment) {
+    	comment.addLongProperty("commentID").primaryKey();
+    	comment.addLongProperty("timeStamp").notNull();
+    	comment.addStringProperty("htmlContent");
+    	addContentObjectAttributes (comment);
+    }
+    
+    
+    private static void addAnnouncementAttributes (Entity announcement) {
+    	announcement.addLongProperty("announcementID").primaryKey();
+    	announcement.addStringProperty("timeStamp");
+    	announcement.addStringProperty("image");
+    	announcement.addStringProperty("content");
+    	addContentObjectAttributes (announcement);
+    }
+    
+    
+    private static void addContentObjectAttributes (Entity contentObject) {
+    	contentObject.addStringProperty("title");
+    	contentObject.addIntProperty("sortID").notNull();
+    	contentObject.addStringProperty("metaData");
+    	contentObject.addIntProperty("shouldAddBadge").notNull();
+    	contentObject.addIntProperty("isdeleted").notNull();
+    	contentObject.addIntProperty("allowNotes").notNull();
+    	contentObject.addIntProperty("allowShare").notNull();
+    	contentObject.addIntProperty("isHidden").notNull();
+    }
+    
+    
+    private static void addDeviceAttributes (Entity device) {
+    	device.addLongProperty("ID").primaryKey().autoincrement();
+    	device.addStringProperty("deviceID").unique();
+    	device.addStringProperty("pushToken");
+    	device.addIntProperty("isLoggedIn").notNull();
+    	device.addIntProperty("isdeleted").notNull();
+    }
+    
+    
+    private static void addMobileUserAttributes (Entity mobileUser) {
+    	mobileUser.addLongProperty("ID").primaryKey().autoincrement();
+    	mobileUser.addStringProperty("twitterAccount");
+    	mobileUser.addStringProperty("twitterPassword");
+    	mobileUser.addStringProperty("linkedInAccount");
+    	mobileUser.addStringProperty("linkedInPassword");
+    	mobileUser.addStringProperty("everNoteAccount");
+    	mobileUser.addStringProperty("everNotePassword");
+    	mobileUser.addIntProperty("isLoggedIn");
+    }
+    
+    
+    
+    
+
+    private static void addSection__TopicAttributes (Entity section__topic) {
+    	section__topic.addLongProperty("id").primaryKey().autoincrement();
+    	section__topic.addLongProperty("idx");
+    	section__topic.addLongProperty("topicID");
+    	section__topic.addIntProperty("isdeleted").notNull();
+    	section__topic.addIntProperty("sortID").notNull();
+    }
+    
+    
+    private static void addSection__PersonAttributes (Entity section__person) {
+    	section__person.addLongProperty("id").primaryKey().autoincrement();
+    	section__person.addLongProperty("idx");
+    	section__person.addLongProperty("personID");
+    	section__person.addIntProperty("isdeleted").notNull();
+    	section__person.addIntProperty("sortID").notNull();
+    }
+    
+    
+    private static void addSection__PageAttributes (Entity section__page) {
+    	section__page.addLongProperty("id").primaryKey().autoincrement();
+    	section__page.addLongProperty("idx");
+    	section__page.addLongProperty("pageID");
+    	section__page.addIntProperty("isdeleted").notNull();    	
+    	section__page.addIntProperty("sortID").notNull();
+    }
+    
+    private static void addAgendaAttributes (Entity agenda) {
+    	agenda.addLongProperty("agendaID").primaryKey();
+    	agenda.addIntProperty("isdeleted").notNull();    	
+    	agenda.addIntProperty("sortID").notNull();
+    }    
+}

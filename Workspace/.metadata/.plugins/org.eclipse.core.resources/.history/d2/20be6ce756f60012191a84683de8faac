@@ -1,0 +1,29 @@
+/**
+ * 
+ */
+package com.nqmtuan.android.randomrandomizer.SquareLayout;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.widget.RelativeLayout;
+
+/**
+ * @author nqmtuan
+ * This class is a base class that generates a layout where the height = (width * multiplier + offset)
+ */
+public class AspectLayout extends RelativeLayout {
+
+	public AspectLayout(Context context) {
+		super(context);
+	}	
+
+	public AspectLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+	
+	@Override
+	protected void onMeasure (int widthMeasureSpec, int heightMeasureSpec) {
+		
+	}
+	
+}

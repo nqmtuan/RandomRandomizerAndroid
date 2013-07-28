@@ -1,0 +1,14 @@
+/**
+ * 
+ */
+package com.nqmtuan.android.randomrandomizer.SquareLayout;
+
+import android.widget.RelativeLayout;
+
+/**
+ * @author nqmtuan
+ *
+ */
+public class AspectLayout extends RelativeLayout {
+
+}

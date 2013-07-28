@@ -1,0 +1,458 @@
+/*
+ * Copyright (C) 2011 Markus Junginger, greenrobot (http://greenrobot.de)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package de.greenrobot.daogenerator.gentest;
+
+import de.greenrobot.daogenerator.DaoGenerator;
+import de.greenrobot.daogenerator.Entity;
+import de.greenrobot.daogenerator.Property;
+import de.greenrobot.daogenerator.Schema;
+import de.greenrobot.daogenerator.ToMany;
+
+/**
+ * Generates entities and DAOs for the example project DaoExample.
+ * 
+ * Run it as a Java application (not Android).
+ * 
+ * @author Markus
+ */
+public class ExampleDaoGenerator {
+
+    public static void main(String[] args) throws Exception {
+//        Schema schema = new Schema(3, "de.greenrobot.daoexample");
+//
+//        addNote(schema);
+//        addCustomerOrder(schema);
+//
+//        new DaoGenerator().generateAll(schema, "../DaoExample/src-gen");
+
+    	//User
+//        Schema schema = new Schema(3, "com.zimerick.zmrklibrary.zmrkdatasynctest");
+//        addUser(schema);
+//        new DaoGenerator().generateAll(schema, "../DataSyncTest/src-gen");
+
+//        Schema schema = new Schema(3, "com.zimerick.zmrklibrary.zmrkdatasync");
+//        addCoreDataQueueObject(schema);
+//        new DaoGenerator().generateAll(schema, "../AndroidZMRKDataSync/src-gen");
+    	
+    	
+//        Schema schema = new Schema(3, "com.example.datasynctest");
+//        addDataSyncTestSchema(schema);
+//        new DaoGenerator().generateAll(schema, "../../../../../Android Projects/DataSyncTest/src-gen");    	
+    	
+
+        Schema schema = new Schema(3, "com.zimerick.caltexstationlocator");
+        schema.enableKeepSectionsByDefault();
+        addCaltexSchema(schema);
+//        new DaoGenerator().generateAll(schema, "/Users/minhtuan/dev/Caltex checkout/Android/Caltex2/src-gen");
+        new DaoGenerator().generateAll(schema, "/Users/minhtuan/dev/Caltex Checkout 2/Caltex/src-gen");
+    }
+    
+    
+    private static void addCaltexSchema (Schema schema)
+    {
+    	//Status
+    	Entity status = schema.addEntity("Status");
+    	status.implementsSerializable();
+    	addStatusAttributes(status);
+    	
+    	
+    	//Device
+    	Entity device = schema.addEntity("Device");
+    	device.implementsSerializable();
+    	addDeviceAttributes(device);    	    	    	
+    	
+    	//Link Device with status
+    	Property deviceStatusID = device.addLongProperty ("statusID").getProperty();
+    	device.addToOne(status, deviceStatusID);    	    	
+    	
+    	
+    	//Country
+    	Entity country = schema.addEntity("ZMRKAdminCountry");
+    	country.implementsSerializable();
+    	addCountryAttributes(country);
+    	
+    	
+    	//City
+    	Entity city = schema.addEntity("City");
+    	city.implementsSerializable();
+    	addCityAttributes(city);
+    	
+    	//Link city with country
+    	Property cityCountryID = city.addLongProperty("countryID").getProperty();
+    	city.addToOne(country, cityCountryID);
+    	
+    	
+    	//Station
+    	Entity station = schema.addEntity("Station");
+    	station.implementsSerializable();
+    	addStationAttributes(station);
+    	
+    	//Link station with country
+    	Property stationCountryID = station.addLongProperty("countryID").getProperty();
+    	station.addToOne(country,stationCountryID);
+    	
+    	
+    	//Amenity
+    	Entity amenity = schema.addEntity("Amenity");
+    	amenity.implementsSerializable();
+    	addAmenityAttributes(amenity);
+    	
+    	//Link amenity with countryID
+    	Property amentityCountryID = amenity.addLongProperty("countryID").getProperty();
+    	amenity.addToOne(country, amentityCountryID);
+    	
+    	
+    	//Fuel
+    	Entity fuel = schema.addEntity("Fuel");
+    	fuel.implementsSerializable();
+    	addFuelAttributes(fuel);
+    	
+    	//Link fueld with countryID
+    	Property fuelCountryID = fuel.addLongProperty("countryID").getProperty();
+    	fuel.addToOne(country, fuelCountryID);
+    
+    	
+    	//Promotion
+    	Entity promotion = schema.addEntity("Promotion");
+    	promotion.implementsSerializable();
+    	addPromotionAttributes(promotion);
+    	
+    	//Link promotion with countryID
+    	Property promotionCountryID = promotion.addLongProperty("countryID").getProperty();
+    	promotion.addToOne(country, promotionCountryID);
+    	
+    	
+    	//Rating
+//    	Entity rating = schema.addEntity("Rating");
+//    	rating.implementsSerializable();
+//    	addRatingAttributes(rating);    	
+//    	
+//    	//Link rating with stationID
+//    	Property ratingStationID = rating.addLongProperty("stationID").getProperty();
+//    	rating.addToOne(station, ratingStationID);
+//    	Property stationRatingID = station.addLongProperty("ratingID").getProperty();
+//    	station.addToOne(rating, stationRatingID);
+    	
+    	
+    	//Feedback
+    	Entity feedback = schema.addEntity("Feedback");
+    	feedback.implementsSerializable();
+    	addFeedbackAttributes(feedback);    	
+    	
+    	//Link feedback with stationID
+    	Property feedbackStationID = feedback.addLongProperty("stationID").getProperty();
+    	feedback.addToOne(station, feedbackStationID);
+    	Property stationFeedbackID = station.addLongProperty("feedbackID").getProperty();
+    	station.addToOne(feedback, stationFeedbackID);
+    	
+    	
+    	    	    	
+    	//Broadcast
+    	Entity broadcast = schema.addEntity("Broadcast");
+    	broadcast.implementsSerializable();
+    	addBroadcastAttributes(broadcast);    	
+    	
+    	
+    	//Analytics
+    	Entity analytic = schema.addEntity("Analytic");
+    	analytic.implementsSerializable();
+    	addAnalyticAttributes(analytic);    	
+    	
+    	
+    	//Link broadcast with countryID
+    	Property broadcastCountryID = broadcast.addLongProperty("countryID").getProperty();
+    	broadcast.addToOne(country, broadcastCountryID);
+    	
+    	    	
+    	//Station__Promotion
+    	Entity station__promotion = schema.addEntity("Station__Promotion");
+    	addStation__PromotionAttributes(station__promotion);
+    	
+    	
+    	//Station+Amenity
+    	Entity station__amenity = schema.addEntity("Station__Amenity");
+    	addStation__AmenityAttributes(station__amenity);
+    	
+    	    	
+    	//Station+Fuel
+    	Entity station__fuel = schema.addEntity("Station__Fuel");
+    	addStation__FuelAttributes(station__fuel);    	
+    }
+    
+    
+    
+    private static void addDeviceAttributes (Entity device)
+    {
+    	device.addLongProperty("ID").primaryKey().autoincrement();
+    	device.addStringProperty("deviceID").unique();
+    	device.addFloatProperty("latitude").notNull();
+    	device.addFloatProperty("longitude").notNull();
+    	device.addFloatProperty("direction").notNull();
+    	device.addStringProperty("deviceName").notNull();
+    	//device.addIntProperty("carType").notNull();
+    	device.addIntProperty("likeGained").notNull();
+    	device.addStringProperty("pushToken").notNull();
+    	device.addStringProperty ("macAddress").notNull();
+    	device.addStringProperty("deviceOS").notNull();
+    	device.addIntProperty("allowLocationShare").notNull();
+    	device.addLongProperty("userPoints").notNull();
+    	device.addLongProperty("stationsVisited").notNull();
+    	device.addLongProperty("promosViewed").notNull();
+    	device.addLongProperty("stationsRouted").notNull();
+    	device.addStringProperty("deviceCountryCode");
+    }
+    
+    
+    private static void addStatusAttributes (Entity status)
+    {
+    	status.addLongProperty("statusID").primaryKey().autoincrement();
+    	status.addStringProperty("deviceID").notNull();
+    	status.addStringProperty("name");
+    	status.addStringProperty("statusText");
+    	status.addIntProperty("carType").notNull();
+    	status.addIntProperty("carLevel").notNull();
+    	status.addFloatProperty("direction").notNull();
+    	status.addFloatProperty("latitude").notNull();
+    	status.addFloatProperty("longitude").notNull();
+    	status.addIntProperty("isdeleted").notNull();
+    	status.addLongProperty("timeStamp").notNull();
+    }
+    
+    private static void addCountryAttributes (Entity country)
+    {
+    	country.addLongProperty("countryID").primaryKey();
+    	country.addStringProperty("countryCode");
+    	country.addStringProperty("countryName");
+    	country.addStringProperty("countryNetworkCode");
+    	country.addIntProperty("isdeleted").notNull();    	
+    }
+    
+    
+    private static void addCityAttributes (Entity city)
+    {
+    	city.addLongProperty("cityID").primaryKey();
+    	city.addStringProperty("cityName");
+    	city.addStringProperty("cityNetworkCode");
+    	city.addStringProperty("gmt");    	
+    	city.addIntProperty("isdeleted").notNull();    	
+    }
+    
+    
+    private static void addStationAttributes (Entity station)
+    {
+    	station.addLongProperty("stationID").primaryKey();
+    	station.addStringProperty("stationName");
+    	station.addStringProperty("stationDescription");
+    	station.addIntProperty("status").notNull();
+    	station.addIntProperty("isdeleted").notNull();
+    	station.addStringProperty("notes");
+    	station.addStringProperty("phoneNumber");
+    	station.addStringProperty("givenName");
+    	station.addStringProperty("familyName");
+    	station.addStringProperty("email");
+    	station.addFloatProperty("latitude").notNull();
+    	station.addFloatProperty("longitude").notNull();
+    	station.addFloatProperty("geofence");   
+    	station.addFloatProperty("distanceFromUser").notNull();
+    	station.addIntProperty("isFavourite").notNull();
+    	station.addStringProperty("street");
+    	station.addStringProperty("city");
+    	station.addStringProperty("state");
+    	station.addStringProperty("postalCode");
+    	station.addStringProperty("openingHours");
+    	station.addIntProperty("isSpecialStation").notNull();
+    	station.addStringProperty("stationImage");
+    	station.addStringProperty("website");
+    	station.addStringProperty("metaKeywords");
+    }
+    
+    
+    private static void addAmenityAttributes (Entity amenity)
+    {
+    	amenity.addLongProperty("amenityID").primaryKey();
+    	amenity.addStringProperty("amenityName");
+    	amenity.addIntProperty("isdeleted").notNull();
+    	amenity.addIntProperty("sortID").notNull();
+    	amenity.addIntProperty("lubeOilChange").notNull();
+    }
+    
+
+    private static void addFuelAttributes (Entity fuel)
+    {
+    	fuel.addLongProperty("fuelID").primaryKey();
+    	fuel.addStringProperty("fuelName");
+    	fuel.addStringProperty("fuelImage");
+    	fuel.addStringProperty("fuelImageOld");
+    	fuel.addIntProperty("isdeleted").notNull();
+    	fuel.addIntProperty("sortID").notNull();
+    }
+    
+
+    private static void addPromotionAttributes (Entity promotion)
+    {
+    	promotion.addLongProperty("promotionID").primaryKey();
+    	promotion.addStringProperty("promotionName");
+    	promotion.addIntProperty("isdeleted").notNull();
+    	promotion.addIntProperty("hasViewed").notNull();
+    	promotion.addIntProperty("hasPopUp").notNull();
+    	promotion.addStringProperty("promotionThumbnail");
+    	promotion.addStringProperty("promotionThumbnailOld");
+    	promotion.addStringProperty("promotionImage");
+    	promotion.addStringProperty("promotionImageOld");
+    	promotion.addStringProperty("timeZone");
+    	promotion.addStringProperty("startDateTime");
+    	promotion.addStringProperty("endDateTime");
+    	promotion.addIntProperty("status").notNull();  
+    	promotion.addStringProperty("passFileURL");
+    	promotion.addIntProperty("lubeOilPromo").notNull();
+    	promotion.addStringProperty("promotionBody");
+    	promotion.addStringProperty("promotionTAndC");
+    }
+    
+    private static void addRatingAttributes (Entity rating)
+    {
+    	rating.addLongProperty("ratingID").primaryKey();
+    	rating.addStringProperty("deviceID");
+    	rating.addStringProperty("timeStamp");
+    	rating.addIntProperty("rating");    	    	
+    }
+    
+
+    private static void addFeedbackAttributes (Entity feedback)
+    {
+    	feedback.addLongProperty("feedbackID").primaryKey();
+    	feedback.addStringProperty("deviceID");
+    	feedback.addStringProperty("timeStamp");
+    	feedback.addIntProperty("rating").notNull();
+    	feedback.addStringProperty("feedbackText");    	
+    }
+    
+
+    private static void addBroadcastAttributes (Entity broadcast)
+    {
+    	broadcast.addLongProperty("broadcastID").primaryKey();
+    	broadcast.addStringProperty("message");
+    	broadcast.addIntProperty("isdeleted").notNull();
+    	broadcast.addIntProperty("hasViewed").notNull();
+    	broadcast.addIntProperty("hasPopUp").notNull();
+    	broadcast.addStringProperty("timezone");
+    	broadcast.addStringProperty("startDateTime");
+    	broadcast.addIntProperty("status").notNull();    	
+    }
+    
+    
+    private static void addAnalyticAttributes (Entity analytic)
+    {
+    	analytic.addLongProperty("analyticsID").primaryKey();
+    	analytic.addStringProperty("deviceID");
+    	analytic.addStringProperty("analyticsType");
+    	analytic.addStringProperty("value");
+    	analytic.addStringProperty("timeStamp");
+    	analytic.addStringProperty("deviceCountryCode");
+    	analytic.addStringProperty("deviceOS");
+    }
+    
+    
+
+    private static void addStation__PromotionAttributes (Entity station__promotion)
+    {
+    	station__promotion.addLongProperty("id").primaryKey().autoincrement();
+    	station__promotion.addLongProperty("stationID");
+    	station__promotion.addLongProperty("promotionID");
+    	station__promotion.addIntProperty("isdeleted");    	
+    }
+    
+
+    private static void addStation__AmenityAttributes (Entity station__amenity)
+    {
+    	station__amenity.addLongProperty("id").primaryKey().autoincrement();
+    	station__amenity.addLongProperty("stationID");
+    	station__amenity.addLongProperty("amenityID");
+    	station__amenity.addIntProperty("isdeleted");    	
+    }
+    
+
+    private static void addStation__FuelAttributes (Entity station__fuel)
+    {
+    	station__fuel.addLongProperty("id").primaryKey().autoincrement();
+    	station__fuel.addLongProperty("stationID");
+    	station__fuel.addLongProperty("fuelID");
+    	station__fuel.addIntProperty("isdeleted");    	
+    }
+    
+    
+    
+    private static void addDataSyncTestSchema (Schema schema)
+    {
+    	Entity person = schema.addEntity ("Persons");
+    	person.addLongProperty("personID").primaryKey().autoincrement();
+    	person.addStringProperty("personName");
+    	person.addIntProperty("countryID");
+    	person.addIntProperty("cityID");
+    	person.addStringProperty("address");
+    	person.addStringProperty("phoneNumber");
+    	person.addStringProperty("password");
+    	person.addStringProperty("personImage");
+    }
+
+    
+    private static void addCoreDataQueueObject (Schema schema)
+    {
+    	Entity coreDataQueue = schema.addEntity("ZMRKCoreDataQueueObject");
+    	coreDataQueue.addLongProperty("objectID").primaryKey().autoincrement();
+    	coreDataQueue.addIntProperty("appIndex");
+    	coreDataQueue.addStringProperty("data");
+    	coreDataQueue.addIntProperty("modifiedIndex");
+    }
+    
+    private static void addUser (Schema schema)
+    {
+    	Entity user = schema.addEntity ("User");
+    	user.addLongProperty("userID").primaryKey().autoincrement();
+    	user.addStringProperty("userName").notNull();
+    	user.addStringProperty("password");
+    	user.addStringProperty("userEmail");
+    	user.addStringProperty("givenName");
+    	user.addStringProperty("familyName");
+    	user.addIntProperty("roleID");
+    	user.addIntProperty("accountStatus");
+    }
+    
+    private static void addNote(Schema schema) {
+        Entity note = schema.addEntity("Note");
+        note.addIdProperty();
+        note.addStringProperty("text").notNull();
+        note.addStringProperty("comment");
+        note.addDateProperty("date");
+    }
+
+    private static void addCustomerOrder(Schema schema) {
+        Entity customer = schema.addEntity("Customer");
+        customer.addIdProperty();
+        customer.addStringProperty("name").notNull();
+
+        Entity order = schema.addEntity("Order");
+        order.setTableName("ORDERS"); // "ORDER" is a reserved keyword
+        order.addIdProperty();
+        Property orderDate = order.addDateProperty("date").getProperty();
+        Property customerId = order.addLongProperty("customerId").notNull().getProperty();
+        order.addToOne(customer, customerId);
+
+        ToMany customerToOrders = customer.addToMany(order, customerId);
+        customerToOrders.setName("orders");
+        customerToOrders.orderAsc(orderDate);
+    }    
+}

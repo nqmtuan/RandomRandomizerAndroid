@@ -1,0 +1,37 @@
+package com.nqmtuan.android.randomrandomizer.FragmentTab;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.SherlockFragment;
+import com.nqmtuan.android.randomrandomizer.R;
+
+public class FragmentTab2 extends SherlockFragment implements ActionBar.TabListener{
+	private Fragment mFragment;
+	
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Get the view from fragment1.xml
+        getActivity().setContentView (R.layout.fragment2);
+    }
+    
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+        // TODO Auto-generated method stub
+        mFragment = new FragmentTab2();
+        ft.add(android.R.id.content, mFragment);
+        ft.attach(mFragment);
+    }
+ 
+    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+        ft.remove(mFragment);
+    }
+ 
+    public void onTabReselected(Tab tab, FragmentTransaction ft) {
+        // TODO Auto-generated method stub
+ 
+    }
+}

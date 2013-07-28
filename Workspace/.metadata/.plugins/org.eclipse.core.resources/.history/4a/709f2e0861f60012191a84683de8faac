@@ -1,0 +1,5 @@
+package com.nqmtuan.android.randomrandomizer.DomainObject;
+
+public class RandomElement {
+
+}

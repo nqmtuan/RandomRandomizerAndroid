@@ -1,0 +1,9 @@
+package com.nqmtuan.android.randomrandomizer.DomainObject;
+
+public class RandomElement {
+	private String elementName;
+	private String elementImageName;
+	private String elementDrawableName;
+	
+	
+}
