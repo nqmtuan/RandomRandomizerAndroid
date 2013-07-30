@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ScrollView
+        android:id="@+id/create_random_collection_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/create_random_collection_main_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <RelativeLayout
+                android:id="@+id/create_random_collection_info_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" 
+                android:layout_marginLeft="10dp"
+                >
+
+                <RelativeLayout
+                    android:id="@+id/create_random_collection_name_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp" >
+
+                    <TextView
+                        android:id="@+id/create_random_collection_name_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        
+                        android:text="@string/random_collection_name_label" />
+
+                    <EditText
+                        android:id="@+id/create_random_collection_name_edit_text"
+                        android:layout_width="fill_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_toRightOf="@+id/create_random_collection_name_text_view" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/create_random_collection_nselection_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/create_random_collection_name_container"
+                    android:layout_marginTop="10dp" >
+
+                    <TextView
+                        android:id="@+id/create_random_collection_nselection_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_centerVertical="true"
+                        android:text="@string/random_collection_nselection_label" />
+
+                    <EditText
+                        android:id="@+id/create_random_collection_nselection_edit_text"
+                        android:layout_width="fill_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_toRightOf="@+id/create_random_collection_nselection_text_view"
+                        android:inputType="number" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/create_random_collection_should_allow_repeat_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/create_random_collection_nselection_container"
+                    android:layout_marginTop="10dp" >
+
+                    <TextView
+                        android:id="@+id/create_random_collection_should_allow_repeat_text_view"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"                        
+                        android:text="@string/random_collection_should_allow_repeat_label" />
+
+                    <CheckBox
+                        android:id="@+id/create_random_collection_should_allow_repeat_check_box"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="10dp" />
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/create_random_collection_image_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/create_random_collection_info_container" >
+                
+                
+                <TextView 
+                    android:id="@+id/create_random_collection_image_label"
+            		android:layout_width="wrap_content"
+            		android:layout_height="wrap_content"            		
+            		android:text="@string/random_collection_add_image_label"
+                    />
+                
+                <Button 
+                    android:id="@+id/create_random_collection_image_add_button"
+            		android:layout_width="wrap_content"
+            		android:layout_height="wrap_content"            		
+            		android:text="@string/random_collection_add_image_label"
+             		android:layout_toRightOf="@+id/create_random_collection_image_label"
+             		android:layout_marginLeft="10dp"   	    
+                    />
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

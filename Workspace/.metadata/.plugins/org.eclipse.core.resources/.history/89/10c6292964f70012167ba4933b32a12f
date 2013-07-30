@@ -1,0 +1,15 @@
+package com.nqmtuan.android.randomrandomizer;
+
+import android.content.Context;
+import android.widget.RelativeLayout;
+
+public class RandomCollectionTile extends RelativeLayout {
+	private RandomElementCollection collection;
+
+	public RandomCollectionTile(Context context) {
+		super(context);
+		// TODO Auto-generated constructor stub
+	}
+	
+	public RandomCollectionTile
+}

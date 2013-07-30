@@ -1,0 +1,717 @@
+package com.nqmtuan.android.randomrandomizer.Database;
+
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.nqmtuan.android.randomrandomizer.Logging.MyLog;
+import de.greenrobot.dao.AbstractDao;
+import de.greenrobot.dao.AbstractDaoMaster;
+import de.greenrobot.dao.AbstractDaoSession;
+import de.greenrobot.dao.Property;
+import de.greenrobot.dao.QueryBuilder;
+import de.greenrobot.dao.WhereCondition.StringCondition;
+
+public class EntityManager {
+
+	private String databaseName;
+	private AbstractDaoMaster daoMaster;
+	private AbstractDaoSession daoSession;
+	private static String LOGTAG = "EntityManager";
+	private HashMap <String, HashMap<String, String>> columnMappings = null;
+	private EntityManager sharedInstance;
+	
+	public EntityManager getSharedInstance () {
+		if (sharedInstance == null) {
+			sharedInstance = new EntityManager();
+		}
+		return sharedInstance;
+	}
+	
+	
+	public EntityManager() {
+		// TODO Auto-generated constructor stub
+		columnMappings = new HashMap <String, HashMap<String, String>> ();
+	}
+	
+	
+//	public EntityManager (String _databaseName, AbstractDaoMaster _daoMaster)
+//	{
+//		this.databaseName = _databaseName;
+//		this.daoMaster = _daoMaster;
+//		this.daoSession = this.daoMaster.newSession();
+//		columnMappings = new HashMap <String, HashMap<String, String>> ();
+//	}
+	
+	
+	
+	public String getDatabaseName ()
+	{
+		return databaseName;
+	}
+	
+	public void setDatabaseName (String _databaseName)
+	{
+		this.databaseName = _databaseName;
+	}
+	
+	public AbstractDaoMaster getDaoMaster ()
+	{
+		return this.daoMaster;
+	}
+	
+	public void setDaoMaster (AbstractDaoMaster _daoMaster)
+	{
+		this.daoMaster = _daoMaster;
+		this.daoSession = this.daoMaster.newSession();
+	}
+	
+	public AbstractDaoSession getDaoSession () {
+		return this.daoSession;
+	}
+	
+	
+	public Object createEntityWithName (String entityName, String packageName)
+	{
+		Object entityObject = null;
+		try
+		{			
+			//Create the Object
+			String className = entityName;
+			Class<?> entityClass = Class.forName(packageName + "." + className);
+			entityObject = entityClass.newInstance();
+		}
+		catch (Exception e)
+		{
+			MyLog.d (LOGTAG, e.getMessage());
+			return null;
+		}
+		return entityObject;
+	}
+	
+	
+	//
+	private AbstractDao<?,?> getEntityDao (String entityName)
+	{
+		AbstractDao <?,?> entityDao = null;
+		
+		//Get the Dao Object
+		try
+		{
+			String methodName = "get" + entityName + "Dao";
+			Method getEntityDaoMethod = daoSession.getClass().getMethod (methodName, new Class[]{});
+			entityDao = (AbstractDao<?,?>)getEntityDaoMethod.invoke(daoSession, new Object[]{});
+		}
+		catch (Exception e)
+		{
+			MyLog.e(LOGTAG, e.getMessage());
+			return null;
+		}
+		
+		return entityDao;
+	}
+	
+	
+	//Get method in a class with method name
+	//Return null if no method is found
+	private Method getMethodInClass (Class <?> myClass, String methodName)
+	{
+		Method[] methods = myClass.getMethods();
+		for (Method method:methods)
+		{
+			if (method.getName().equals(methodName))
+				return method;
+		}
+		return null;
+	}
+	
+	private String getSetterName (String attributeName)
+	{
+		String capitalizedAttributeName = ""; 
+		if (attributeName.length() == 1)
+			capitalizedAttributeName = attributeName.toUpperCase().substring(0, 1);
+		else
+			capitalizedAttributeName = attributeName.toUpperCase().substring(0, 1) + attributeName.substring(1);
+		String setterName = "set" + capitalizedAttributeName;
+		return setterName;
+	}
+	
+	private String getGetterName (String attributeName)
+	{
+		String capitalizedAttributeName = ""; 
+		if (attributeName.length() == 1)
+			capitalizedAttributeName = attributeName.toUpperCase().substring(0, 1);
+		else
+			capitalizedAttributeName = attributeName.toUpperCase().substring(0, 1) + attributeName.substring(1);
+		String getterName = "get" + capitalizedAttributeName;
+		return getterName;
+	}
+	
+	
+	//Set an attribute for an entity object
+	//Assume that the entityClass has the Setter method for the attribute
+	private boolean setOneEntityAttribute (Object entityObject, String attributeName, Object attributeValue, AbstractDao<?,?> entityDao) throws Exception
+	{
+		Class<?> entityClass = entityObject.getClass();
+		String methodName = getSetterName(attributeName);
+		Method method = getMethodInClass(entityClass, methodName);
+		if (method != null)
+		{
+//			if ((method.getParameterTypes()[0] == Long.class) && (attributeValue instanceof Integer))
+//			{				
+//				long value = (Integer) attributeValue;
+//				Long valueLong = Long.valueOf(value);
+//				method.invoke(entityObject, new Object[]{valueLong});
+//				return true;				
+//			}
+			
+			if (method.getParameterTypes()[0] == Integer.class || method.getParameterTypes()[0].getName().equals("int"))
+			{
+				Integer intVal = Integer.parseInt(String.valueOf(attributeValue));
+				method.invoke(entityObject, new Object[]{intVal});
+				return true;				
+			}
+			else if (method.getParameterTypes()[0] == Long.class || method.getParameterTypes()[0].getName().equals("long"))
+			{
+				Long longVal = Long.parseLong(String.valueOf(attributeValue));
+				method.invoke(entityObject, new Object[]{longVal});
+				return true;								
+			}
+			else if (method.getParameterTypes()[0] == Float.class || method.getParameterTypes()[0].getName().equals("float"))
+			{
+				Float floatVal = Float.parseFloat(String.valueOf(attributeValue));
+				method.invoke(entityObject, new Object[]{floatVal});
+				return true;								
+			}
+			else if (method.getParameterTypes()[0] == Double.class || method.getParameterTypes()[0].getName().equals("double"))
+			{
+				Double doubleVal = Double.parseDouble(String.valueOf(attributeValue));
+				method.invoke(entityObject, new Object[]{doubleVal});
+				return true;								
+			}
+			else if (method.getParameterTypes()[0] == String.class)
+			{
+				String stringVal = String.valueOf(attributeValue);
+				method.invoke(entityObject, new Object[]{stringVal});
+				return true;								
+			}
+			
+			else
+			{
+				method.invoke(entityObject, new Object[]{attributeValue});
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	public Object createEntityWithNameAndAttributes (String entityName, HashMap <String, Object>  entityAttributes, String packageName)
+	{
+		//Create the empty object
+		Object entityObject = createEntityWithName (entityName, packageName);
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		
+		
+		if (entityObject != null && entityDao != null)
+		{
+			//Set the property of the object
+			for (Map.Entry<String, Object> entry: entityAttributes.entrySet())
+			{
+				String attributeName = entry.getKey();
+				Object attributeValue = entry.getValue();
+				try
+				{
+					boolean success = setOneEntityAttribute(entityObject, attributeName, attributeValue, entityDao);
+					if (success == false)
+						return null;
+				}
+				catch (Exception e)
+				{
+					MyLog.e(LOGTAG, e.getMessage());
+					return null;
+				} 
+			}
+		}		
+		return entityObject;
+	}
+	
+	
+	
+	public Object createOrUpdateEntityWithNameAndAttributes (String entityName, HashMap <String, Object> entityAttributes, String packageName)
+	{
+		Object entity = createEntityWithNameAndAttributes(entityName, entityAttributes, packageName);
+		if (entity != null)
+		{
+			AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+			if (entityDao != null)
+			{
+				try
+				{
+					Method insertMethod = getMethodInClass(entityDao.getClass(), "insertOrReplace");
+					if (insertMethod == null)
+						return null;
+					insertMethod.invoke(entityDao, new Object[]{entity});
+					return entity;
+				}
+				catch (Exception e)
+				{
+					return null;
+				}
+			}
+			return null;			
+		}
+		return entity;
+	}
+	
+	
+	public Object createOrUpdateEntityWithNameAndAttributes (String entityName, HashMap <String, Object> entityAttributes, String packageName, String entityIDStr)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao != null)
+		{
+			//Get an array of entity IDs
+			String[] tokens = entityIDStr.split(",");
+			HashMap <String, Object> entityPrimaryAttributes = new HashMap <String, Object> ();
+			for (String token:tokens)
+				entityPrimaryAttributes.put(token, entityAttributes.get(token));
+			List<?> listEntity = getNEntitiesByAttributes(entityName, entityPrimaryAttributes, 1, null, true);
+			if (listEntity != null && listEntity.size() == 1)
+			{
+				Object entityObject = listEntity.get(0);
+				//Set the property of the object
+				for (Map.Entry<String, Object> entry: entityAttributes.entrySet())
+				{
+					String attributeName = entry.getKey();
+					Object attributeValue = entry.getValue();
+					try
+					{
+						boolean success = setOneEntityAttribute(entityObject, attributeName, attributeValue, entityDao);
+						if (success == false)
+						{
+							MyLog.e (LOGTAG, "Cannot create entity " + entityName + " with attribute " + attributeName + " with value " + attributeValue);
+							return null;
+						}
+					}
+					catch (Exception e)
+					{
+						MyLog.e(LOGTAG, e.getMessage());
+						return null;
+					}
+				}
+				updateEntity(entityName, entityObject);
+				return entityObject;
+			}
+			else
+			{
+				Object entityObject = createEntityWithNameAndAttributes(entityName, entityAttributes, packageName);
+				insertEntity(entityName, entityObject);
+				return entityObject;				
+			}
+			
+//				try
+//				{
+//					Method insertMethod = getMethodInClass(entityDao.getClass(), "insertOrReplace");
+//					if (insertMethod == null)
+//						return null;
+//					insertMethod.invoke(entityDao, new Object[]{entity});
+//					return entity;
+//				}
+//				catch (Exception e)
+//				{
+//					return null;
+//				}
+		}
+		return null;
+	}	
+	
+	
+	
+	public boolean insertEntity (String entityName, Object entity)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao != null)
+		{
+			try
+			{
+				Method insertMethod = getMethodInClass(entityDao.getClass(), "insert");
+				if (insertMethod == null)
+					return false;
+				insertMethod.invoke(entityDao, new Object[]{entity});
+				return true;
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	
+	public boolean updateEntity (String entityName, Object entity)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao != null)
+		{
+			try
+			{
+				Method insertMethod = getMethodInClass(entityDao.getClass(), "update");
+				if (insertMethod == null)
+					return false;
+				insertMethod.invoke(entityDao, new Object[]{entity});
+				return true;
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	public boolean deleteEntity (String entityName, Object entity)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao != null)
+		{
+			try
+			{
+				Method insertMethod = getMethodInClass(entityDao.getClass(), "delete");
+				if (insertMethod == null)
+					return false;
+				insertMethod.invoke(entityDao, new Object[]{entity});
+				return true;
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+		}
+		return false;
+
+	}
+	
+	public boolean deleteAll (String entityName)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao != null)
+		{
+			try
+			{
+				Method insertMethod = getMethodInClass(entityDao.getClass(), "deleteAll");
+				if (insertMethod == null)
+					return false;
+				insertMethod.invoke(entityDao, new Object[]{});
+				return true;
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	public boolean refreshEntity (String entityName, Object Entity)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao != null)
+		{
+			try
+			{
+				Method insertMethod = getMethodInClass(entityDao.getClass(), "refresh");
+				if (insertMethod == null)
+					return false;
+				insertMethod.invoke(entityDao, new Object[]{});
+				return true;
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	
+	public HashMap <String, String> getColumnMapping (String entityName)	
+	{
+		if (columnMappings.containsKey(entityName))
+			return columnMappings.get(entityName);
+		else
+		{
+			AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+			if (entityDao != null)
+			{
+				HashMap <String, String> columnMapping = getColumnMapping(entityDao);
+				if (columnMapping != null)					
+					columnMappings.put(entityName, columnMapping);
+				return columnMapping;
+			}			
+			return null;
+		}
+	}
+	
+	
+	private HashMap <String, String> getColumnMapping (AbstractDao <?,?> entityDao)
+	{
+		if (entityDao == null)
+			return null;
+		Property[] properties = entityDao.getProperties();
+		HashMap <String, String> result = new HashMap <String, String> ();
+		for (Property property:properties)
+		{			
+			String name = property.name;
+			String columnName = property.columnName;
+			result.put(name, columnName);
+		}
+		return result;
+	}
+	
+	
+	public String getColumnNameForAttribute (String entityName, String attributeName)
+	{
+		HashMap <String, String> columnMap = getColumnMapping (entityName);
+		if (columnMap == null)
+			return null;
+		else if (columnMap.containsKey(attributeName))
+			return columnMap.get(attributeName);
+		else
+			return null;
+	}
+	
+	private Property[] getPropertiesForEntity (String entityName)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao == null)
+			return null;
+		return getPropertiesForEntity (entityDao);
+	}
+	
+
+	private Property[] getPropertiesForEntity (AbstractDao<?, ?> entityDao)
+	{
+		return entityDao.getProperties();
+	}
+	
+	
+	@SuppressWarnings("unused")
+	private Property getPropertyForAttribute (String entityName, String attributeName)
+	{
+		Property [] properties =  getPropertiesForEntity(entityName);
+		for (Property property:properties)
+			if (property.name.equals(attributeName))
+				return property;
+		return null;
+	}
+	
+
+	private Property getPropertyForAttribute (AbstractDao<?,?> entityDao, String attributeName)
+	{
+		Property [] properties =  getPropertiesForEntity(entityDao);
+		for (Property property:properties)
+		{
+			String propertyName = property.name;
+			if (propertyName.equals(attributeName))				
+				return property;
+		}
+		return null;
+	}
+	
+	
+	public List<?> getAllEntities (String entityName, String orderBy, boolean isAscending)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao == null)
+			return null;
+		QueryBuilder<?> queryBuilder = entityDao.queryBuilder();
+		if (orderBy != null)
+		{
+			Property property = getPropertyForAttribute(entityDao, orderBy);
+			if (property == null)
+				return null;
+			if (isAscending)
+				queryBuilder.orderAsc(property);
+			else
+				queryBuilder.orderDesc(property);
+		}
+		
+		List<?> result = queryBuilder.list();
+		return result;
+	}
+	
+	
+	public List <?> getNEntitiesByAttributes (String entityName, HashMap <String, Object> entityAttributes, int limit, String orderBy, boolean isAscending)
+	{
+		try
+		{
+			if (limit < 0)
+				return new ArrayList<Object>();
+			AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+			if (entityDao == null)
+				return null;
+			QueryBuilder<?> queryBuilder = entityDao.queryBuilder();
+			
+			if (entityAttributes != null)
+			{
+				for (Map.Entry<String, Object> entry: entityAttributes.entrySet())
+				{
+					String attributeName = entry.getKey();
+					Object attributeValue = entry.getValue();
+					Property property = getPropertyForAttribute(entityDao, attributeName);
+					if (property == null)
+						return null;
+					queryBuilder = queryBuilder.where (property.eq(attributeValue));
+				}
+			}
+			
+			if (orderBy != null)
+			{
+				Property property = getPropertyForAttribute(entityDao, orderBy);
+				if (property == null)
+					return null;
+				if (isAscending)
+					queryBuilder.orderAsc(property);
+				else
+					queryBuilder.orderDesc(property);
+			}
+			
+			if (limit != 0)
+			{
+				queryBuilder.limit(limit);
+			}
+			
+			List<?> result = queryBuilder.list();
+			return result;
+		}
+		catch (Exception e)
+		{
+			MyLog.e(LOGTAG, e.getMessage());
+			return null;
+		}
+	}
+	
+	
+	
+	public List <?> getNEntitiesBySQL (String entityName, String whereClause, int limit, String rawOrder)
+	{
+		try
+		{
+			if (limit < 0)
+				return new ArrayList<Object>();
+			AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+			if (entityDao == null)
+				return null;
+			QueryBuilder<?> queryBuilder = entityDao.queryBuilder();
+			if (whereClause != null)
+				queryBuilder.where(new StringCondition(whereClause));
+			
+			if (rawOrder != null)
+			{
+				queryBuilder.orderRaw(rawOrder);
+			}
+			
+			if (limit != 0)
+			{
+				queryBuilder.limit(limit);
+			}
+			
+			List<?> result = queryBuilder.list();
+			return result;
+		}
+		catch (Exception e)
+		{
+			MyLog.e(LOGTAG, e.getMessage());
+			return null;
+		}		
+	}
+	
+	
+	
+	public Object getEntityByPrimaryKey (String entityName, Object primaryKey)
+	{
+		AbstractDao <?, ?> entityDao = getEntityDao(entityName);
+		if (entityDao == null)
+			return null;
+		String[] primaryKeyColumns = entityDao.getPkColumns();
+		if (primaryKeyColumns.length != 1) //Only support entity with 1 primary key
+			return null;
+		
+		String primaryKeyColumnName = primaryKeyColumns[0];
+		StringCondition stringCondition =  new StringCondition (primaryKeyColumnName + " = '" + primaryKey.toString() + "'");
+		QueryBuilder<?> queryBuilder = entityDao.queryBuilder().where(stringCondition);
+		Object result = queryBuilder.unique();
+		return result;
+	}
+	
+	public HashMap <String, Object> getAttributesForEntity (String entityName, Object entity)
+	{
+		Property[] properties = getPropertiesForEntity(entityName);
+		if (properties == null)
+			return null;
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		
+		try
+		{
+			for (Property property:properties)
+			{
+				String attributeName = property.name;
+				String getterName = getGetterName(attributeName);
+				Method method = getMethodInClass(entity.getClass(), getterName);
+				if (method != null)
+				{
+					Object attributeValue = method.invoke(entity, new Object[]{});
+					hashMap.put(attributeName, attributeValue);
+				}
+				else
+				{
+					return null;
+				}
+				
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;			
+		}
+		return hashMap;
+	}
+	
+	
+	
+	public HashMap <String, Object> getAttributesForEntity (String entityName, Object entity, List <String> listAttributeName)
+	{
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		try
+		{
+			for (String attributeName:listAttributeName)
+			{
+				String getterName = getGetterName(attributeName);
+				Method method = getMethodInClass(entity.getClass(), getterName);
+				if (method != null)
+				{
+					Object attributeValue = method.invoke(entity, new Object[]{});
+					hashMap.put(attributeName, attributeValue);
+				}
+				else
+				{
+					return null;
+				}
+				
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;			
+		}
+		return hashMap;
+	}	
+	
+	
+}

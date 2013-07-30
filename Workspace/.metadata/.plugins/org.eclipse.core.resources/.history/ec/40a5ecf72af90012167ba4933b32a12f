@@ -1,0 +1,10 @@
+package com.nqmtuan.android.randomrandomizer;
+
+import android.app.Activity;
+
+public class AddEditRandomCollectionActivity extends Activity {
+	@Override
+	protected void onCreate () {
+		
+	}
+}
